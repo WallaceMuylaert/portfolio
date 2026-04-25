@@ -347,7 +347,7 @@ section {
     justify-content: center;
   }
   p {
-    text-align: justify;
+    text-align: center;
   }
   .card {
     display: flex;
