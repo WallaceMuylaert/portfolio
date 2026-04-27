@@ -54,7 +54,7 @@ const CookieBanner = () => {
         >
           <div className="cookie-content">
             <div className="cookie-icon-wrap">
-              <Cookie size={28} />
+              <Cookie size={20} />
             </div>
             <div className="cookie-text">
               <h4>🍪 Este site utiliza cookies</h4>
