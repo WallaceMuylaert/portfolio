@@ -227,6 +227,94 @@
 .table-badge.returning { background: rgba(249,115,22,0.15); color: #f97316; }
 .table-badge.new-visitor { background: rgba(6,182,212,0.15); color: #06b6d4; }
 
+/* Pagination */
+.pagination {
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  margin-top: 1.25rem; padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.pagination-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s;
+}
+.pagination-btn:hover:not(:disabled) { background: rgba(79,70,229,0.2); color: white; }
+.pagination-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+.pagination-info { color: rgba(255,255,255,0.5); font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
+.pagination-current { color: white; font-weight: 700; }
+.pagination-sep { color: rgba(255,255,255,0.2); }
+
+/* Mobile visitor cards */
+.visitor-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+.visitor-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px; padding: 1rem;
+}
+.visitor-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; }
+.visitor-card-date { color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+.visitor-card-details {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+}
+.visitor-card-details span {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.2rem 0.5rem; border-radius: 6px;
+  background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.55);
+  font-size: 0.78rem;
+}
+
+/* Mobile sidebar */
+.admin-mobile-header { display: none; }
+.admin-sidebar-overlay { display: none; }
+.mobile-only { display: none; }
+.desktop-only { display: block; }
+
+/* Admin responsive */
+@media (max-width: 860px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: block !important; }
+
+  .admin-sidebar {
+    position: fixed; left: -280px; top: 0; bottom: 0;
+    width: 260px; z-index: 200; transition: left 0.3s ease;
+  }
+  .admin-sidebar.open { left: 0; }
+
+  .admin-sidebar-overlay {
+    display: block; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 199;
+  }
+
+  .admin-mobile-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.75rem 1rem; background: #1e293b;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .admin-mobile-menu-btn {
+    background: none; border: none; color: white; cursor: pointer;
+    padding: 0.4rem; border-radius: 8px;
+  }
+  .admin-mobile-menu-btn:hover { background: rgba(255,255,255,0.05); }
+  .admin-mobile-title { color: white; font-weight: 700; font-size: 1.1rem; }
+
+  .admin-layout { flex-direction: column; }
+  .admin-main { margin-left: 0; padding: 1rem; }
+  .admin-title { font-size: 1.4rem; }
+  .admin-subtitle { font-size: 0.85rem; }
+  .admin-grid-2 { grid-template-columns: 1fr; }
+  .admin-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .admin-stat-card { padding: 1rem; }
+  .stat-icon { width: 38px; height: 38px; }
+  .stat-value { font-size: 1.3rem; }
+  .stat-label { font-size: 0.78rem; }
+  .admin-panel { padding: 1rem; }
+  .admin-panel h3 { font-size: 1rem; }
+  .feedback-grid { grid-template-columns: 1fr; }
+  .admin-header { margin-bottom: 1rem; }
+  .admin-view-site { padding: 0.4rem 0.75rem; font-size: 0.82rem; }
+}
+
 /* ===== FEEDBACK WIDGET ===== */
 .feedback-trigger {
   position: fixed;
@@ -494,24 +582,7 @@
 /* ===== RESPONSIVE ===== */
 
 /* Admin responsive */
-@media (max-width: 768px) {
-  .admin-sidebar {
-    width: 100%;
-    position: relative;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.5rem;
-  }
-  .sidebar-brand { padding: 0.5rem; font-size: 1rem; border: none; }
-  .sidebar-nav { flex-direction: row; padding: 0; gap: 0; overflow-x: auto; }
-  .sidebar-link span { display: none; }
-  .sidebar-link { padding: 0.6rem; justify-content: center; }
-  .sidebar-footer { display: none; }
-  .admin-layout { flex-direction: column; }
-  .admin-main { margin-left: 0; padding: 1rem; }
-  .admin-grid-2 { grid-template-columns: 1fr; }
-  .admin-stats-grid { grid-template-columns: 1fr 1fr; }
-}
+
 
 /* Feedback responsive */
 @media (max-width: 480px) {
