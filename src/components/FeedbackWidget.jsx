@@ -55,27 +55,29 @@ const FeedbackWidget = () => {
       {/* Modal de feedback */}
       <AnimatePresence>
         {isOpen && (
-          <>
-            <motion.div
-              className="feedback-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-            />
+          <motion.div
+            className="feedback-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setIsOpen(false);
+            }}
+          >
             <motion.div
               className="feedback-modal"
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.95 }}
+              exit={{ opacity: 0, y: 30, scale: 0.96 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <button
                 className="feedback-close"
                 onClick={() => setIsOpen(false)}
                 aria-label="Fechar"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
 
               {submitted ? (
@@ -85,7 +87,7 @@ const FeedbackWidget = () => {
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', delay: 0.1 }}
                   >
-                    <CheckCircle size={56} color="#10b981" />
+                    <CheckCircle size={48} color="#10b981" />
                   </motion.div>
                   <h3>Obrigado pelo feedback!</h3>
                   <p>Sua opinião é muito importante para mim.</p>
@@ -112,7 +114,7 @@ const FeedbackWidget = () => {
                           aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
                         >
                           <Star
-                            size={28}
+                            size={26}
                             fill={star <= (hoverRating || rating) ? '#f59e0b' : 'none'}
                             color={star <= (hoverRating || rating) ? '#f59e0b' : '#cbd5e1'}
                           />
@@ -150,7 +152,7 @@ const FeedbackWidget = () => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Conte-me como posso melhorar..."
-                      rows={3}
+                      rows={2}
                     />
                   </div>
 
@@ -171,13 +173,13 @@ const FeedbackWidget = () => {
                     className="feedback-submit"
                     disabled={rating === 0}
                   >
-                    <Send size={18} />
+                    <Send size={16} />
                     Enviar Feedback
                   </button>
                 </form>
               )}
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
