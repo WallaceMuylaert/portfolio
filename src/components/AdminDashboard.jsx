@@ -83,6 +83,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 const AdminDashboard = () => {
   const [metrics, setMetrics] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [visitorsPage, setVisitorsPage] = useState(1);
@@ -94,7 +96,25 @@ const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const session = getSession();
 
-  useEffect(() => { setMetrics(getDashboardMetrics()); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setLoadError(null);
+    getDashboardMetrics()
+      .then((data) => {
+        if (!cancelled) {
+          setMetrics(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setLoadError(err.message || 'Erro ao carregar métricas');
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const handleLogout = () => { logout(); window.location.href = '/admin'; };
 
@@ -133,6 +153,34 @@ const AdminDashboard = () => {
 
   // Reset page on search
   useEffect(() => { setFeedbacksPage(1); }, [searchTerm]);
+
+  if (loading) {
+    return (
+      <div className="admin-layout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} style={{ marginBottom: '1rem' }}>
+            <LayoutDashboard size={40} />
+          </motion.div>
+          <p style={{ fontSize: '1.1rem' }}>Carregando métricas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError && !metrics) {
+    return (
+      <div className="admin-layout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center', color: '#f87171' }}>
+          <AlertCircle size={40} style={{ marginBottom: '1rem' }} />
+          <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Erro ao carregar dados</p>
+          <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>{loadError}</p>
+          <button onClick={() => window.location.reload()} className="sidebar-link" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!metrics) return null;
 

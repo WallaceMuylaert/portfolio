@@ -12,16 +12,20 @@ const FeedbackWidget = () => {
   const [message, setMessage] = useState('');
   const [contact, setContact] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) return;
 
-    submitFeedback({
-      rating,
-      foundWhatNeeded: foundWhatNeeded === true,
-      message,
-      contact,
-    });
+    try {
+      await submitFeedback({
+        rating,
+        foundWhatNeeded: foundWhatNeeded === true,
+        message,
+        contact,
+      });
+    } catch (err) {
+      console.error('Erro ao enviar feedback:', err);
+    }
 
     setSubmitted(true);
     setTimeout(() => {

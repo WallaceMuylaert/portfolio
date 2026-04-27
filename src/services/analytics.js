@@ -1,8 +1,11 @@
 /**
  * Analytics Service
  * Responsável por rastrear visitas e coletar métricas do portfolio.
- * Coleta dados enriquecidos do visitante via cookies, navigator e performance API.
+ * Envia dados para a API (Netlify Functions + Netlify Blobs) como armazenamento centralizado.
+ * Mantém fallback para localStorage quando a API não está disponível (dev local).
  */
+
+const API_BASE = '/api';
 
 const STORAGE_KEYS = {
   VISITS: 'portfolio_visits',
@@ -30,6 +33,25 @@ function saveToStorage(key, data) {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (e) {
     console.error('Erro ao salvar analytics:', e);
+  }
+}
+
+/**
+ * Faz uma chamada à API com fallback silencioso
+ */
+async function apiCall(endpoint, options = {}) {
+  try {
+    const res = await fetch(`${API_BASE}/${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    return await res.json();
+  } catch {
+    return null;
   }
 }
 
@@ -144,23 +166,6 @@ function getConnectionInfo() {
 }
 
 /**
- * Coleta dados de performance da página
- */
-function getPerformanceData() {
-  try {
-    const [nav] = performance.getEntriesByType('navigation');
-    if (!nav) return null;
-    return {
-      loadTime: Math.round(nav.loadEventEnd - nav.startTime),
-      domReady: Math.round(nav.domContentLoadedEventEnd - nav.startTime),
-      ttfb: Math.round(nav.responseStart - nav.requestStart),
-    };
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Detecta timezone do visitante
  */
 function getTimezone() {
@@ -189,21 +194,16 @@ function getUTMParams() {
   }
 }
 
-// --- API Pública ---
+// --- Coleta de dados do visitante ---
 
-/**
- * Registra uma nova visita ao portfolio com dados enriquecidos
- */
-export function trackVisit() {
-  const visits = getFromStorage(STORAGE_KEYS.VISITS);
+function collectVisitData() {
   const visitorId = getVisitorId();
   const sessionCount = getSessionCount();
   const firstVisit = getFirstVisitDate();
   const connection = getConnectionInfo();
   const utmParams = getUTMParams();
 
-  const visit = {
-    id: generateId(),
+  return {
     visitorId,
     sessionCount,
     firstVisitDate: firstVisit,
@@ -234,66 +234,64 @@ export function trackVisit() {
     colorDepth: window.screen.colorDepth,
     platform: navigator.platform || 'Desconhecido',
   };
+}
 
-  visits.push(visit);
-  saveToStorage(STORAGE_KEYS.VISITS, visits);
+// --- API Pública ---
 
-  // Coleta performance após a página carregar
-  if (document.readyState === 'complete') {
-    setTimeout(() => {
-      const perf = getPerformanceData();
-      if (perf) {
-        const updated = getFromStorage(STORAGE_KEYS.VISITS);
-        const idx = updated.findIndex(v => v.id === visit.id);
-        if (idx !== -1) {
-          updated[idx].performance = perf;
-          saveToStorage(STORAGE_KEYS.VISITS, updated);
-        }
-      }
-    }, 1000);
-  } else {
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const perf = getPerformanceData();
-        if (perf) {
-          const updated = getFromStorage(STORAGE_KEYS.VISITS);
-          const idx = updated.findIndex(v => v.id === visit.id);
-          if (idx !== -1) {
-            updated[idx].performance = perf;
-            saveToStorage(STORAGE_KEYS.VISITS, updated);
-          }
-        }
-      }, 1000);
-    }, { once: true });
-  }
+/**
+ * Registra uma nova visita ao portfolio com dados enriquecidos.
+ * Envia para a API de forma assíncrona (fire-and-forget).
+ * Fallback: salva no localStorage caso a API não responda.
+ */
+export function trackVisit() {
+  const visitData = collectVisitData();
 
-  return visit;
+  // Fire-and-forget: envia para a API sem bloquear
+  apiCall('track-visit', {
+    method: 'POST',
+    body: JSON.stringify(visitData),
+  }).then((result) => {
+    if (!result) {
+      // Fallback: salva localmente se a API falhar
+      const visits = getFromStorage(STORAGE_KEYS.VISITS);
+      visits.push({ id: generateId(), ...visitData });
+      saveToStorage(STORAGE_KEYS.VISITS, visits);
+    }
+  });
+
+  return visitData;
 }
 
 /**
- * Registra uma visualização de seção
+ * Registra uma visualização de seção.
+ * Envia para a API de forma assíncrona (fire-and-forget).
  */
 export function trackSectionView(sectionName) {
-  const views = getFromStorage(STORAGE_KEYS.PAGE_VIEWS);
-
-  views.push({
-    id: generateId(),
+  const data = {
     visitorId: getVisitorId(),
     section: sectionName,
     timestamp: new Date().toISOString(),
-  });
+  };
 
-  saveToStorage(STORAGE_KEYS.PAGE_VIEWS, views);
+  // Fire-and-forget
+  apiCall('track-section', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }).then((result) => {
+    if (!result) {
+      const views = getFromStorage(STORAGE_KEYS.PAGE_VIEWS);
+      views.push({ id: generateId(), ...data });
+      saveToStorage(STORAGE_KEYS.PAGE_VIEWS, views);
+    }
+  });
 }
 
 /**
- * Salva um feedback do visitante
+ * Salva um feedback do visitante.
+ * Envia para a API e retorna o resultado.
  */
-export function submitFeedback({ rating, foundWhatNeeded, message, contact }) {
-  const feedbacks = getFromStorage(STORAGE_KEYS.FEEDBACKS);
-
-  const feedback = {
-    id: generateId(),
+export async function submitFeedback({ rating, foundWhatNeeded, message, contact }) {
+  const feedbackData = {
     visitorId: getVisitorId(),
     timestamp: new Date().toISOString(),
     rating,
@@ -305,41 +303,48 @@ export function submitFeedback({ rating, foundWhatNeeded, message, contact }) {
     sessionCount: getSessionCount(),
   };
 
-  feedbacks.push(feedback);
-  saveToStorage(STORAGE_KEYS.FEEDBACKS, feedbacks);
-  return feedback;
+  const result = await apiCall('submit-feedback', {
+    method: 'POST',
+    body: JSON.stringify(feedbackData),
+  });
+
+  if (!result) {
+    // Fallback: salva localmente
+    const feedbacks = getFromStorage(STORAGE_KEYS.FEEDBACKS);
+    const feedback = { id: generateId(), ...feedbackData };
+    feedbacks.push(feedback);
+    saveToStorage(STORAGE_KEYS.FEEDBACKS, feedbacks);
+    return feedback;
+  }
+
+  return { id: result.id, ...feedbackData };
 }
 
 /**
- * Retorna todas as visitas registradas
+ * Retorna métricas agregadas para o dashboard.
+ * Busca da API (dados centralizados de TODOS os visitantes).
+ * Fallback: usa dados locais se a API não responder.
  */
-export function getVisits() {
-  return getFromStorage(STORAGE_KEYS.VISITS);
+export async function getDashboardMetrics() {
+  const apiMetrics = await apiCall('metrics');
+
+  if (apiMetrics && !apiMetrics.error) {
+    return apiMetrics;
+  }
+
+  // Fallback: gera métricas a partir do localStorage (dados locais apenas)
+  console.warn('API indisponível, usando dados locais como fallback.');
+  return generateLocalMetrics();
 }
 
 /**
- * Retorna todos os feedbacks
+ * Gera métricas a partir dos dados locais (fallback)
  */
-export function getFeedbacks() {
-  return getFromStorage(STORAGE_KEYS.FEEDBACKS);
-}
+function generateLocalMetrics() {
+  const visits = getFromStorage(STORAGE_KEYS.VISITS);
+  const feedbacks = getFromStorage(STORAGE_KEYS.FEEDBACKS);
+  const pageViews = getFromStorage(STORAGE_KEYS.PAGE_VIEWS);
 
-/**
- * Retorna todas as visualizações de seção
- */
-export function getPageViews() {
-  return getFromStorage(STORAGE_KEYS.PAGE_VIEWS);
-}
-
-/**
- * Retorna métricas agregadas para o dashboard
- */
-export function getDashboardMetrics() {
-  const visits = getVisits();
-  const feedbacks = getFeedbacks();
-  const pageViews = getPageViews();
-
-  // Visitas por dia (últimos 7 dias)
   const now = new Date();
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(now);
@@ -352,45 +357,34 @@ export function getDashboardMetrics() {
     count: visits.filter(v => v.timestamp.startsWith(day)).length,
   }));
 
-  // Dispositivos
   const deviceStats = visits.reduce((acc, v) => {
     acc[v.device] = (acc[v.device] || 0) + 1;
     return acc;
   }, {});
 
-  // Browsers
   const browserStats = visits.reduce((acc, v) => {
     acc[v.browser] = (acc[v.browser] || 0) + 1;
     return acc;
   }, {});
 
-  // Seções mais visitadas
   const sectionStats = pageViews.reduce((acc, v) => {
     acc[v.section] = (acc[v.section] || 0) + 1;
     return acc;
   }, {});
 
-  // Média de rating
   const avgRating = feedbacks.length
     ? (feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length).toFixed(1)
     : 0;
 
-  // % que encontrou o que precisava
   const foundPercent = feedbacks.length
     ? Math.round((feedbacks.filter(f => f.foundWhatNeeded).length / feedbacks.length) * 100)
     : 0;
 
-  // Visitas hoje
   const today = new Date().toISOString().split('T')[0];
   const visitsToday = visits.filter(v => v.timestamp.startsWith(today)).length;
-
-  // Visitantes únicos
   const uniqueVisitors = new Set(visits.map(v => v.visitorId)).size;
-
-  // Visitantes recorrentes
   const returningVisitors = visits.filter(v => v.isReturning).length;
 
-  // OS stats
   const osStats = visits.reduce((acc, v) => {
     acc[v.os] = (acc[v.os] || 0) + 1;
     return acc;

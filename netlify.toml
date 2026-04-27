@@ -1,11 +1,20 @@
 # Netlify configuration
+
 [build]
   # Command to build the site
   command = "npm run build"
   # Directory that contains the built site
   publish = "dist"
+  # Directory containing Netlify Functions
+  functions = "netlify/functions"
 
-# Redirect all routes to index.html for client‑side routing
+# Redirect API calls to Netlify Functions (deve vir ANTES do catch-all)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Redirect all routes to index.html for client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
