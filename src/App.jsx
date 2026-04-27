@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bot, 
@@ -18,6 +19,10 @@ import {
   MessageCircle
 } from 'lucide-react';
 import profileImg from './assets/profile.jpg';
+import AdminPage from './pages/AdminPage';
+import FeedbackWidget from './components/FeedbackWidget';
+import CookieBanner from './components/CookieBanner';
+import { trackVisit, trackSectionView } from './services/analytics';
 
 // --- Data ---
 const PROFILE_DATA = {
@@ -384,7 +389,31 @@ const Contact = () => (
   </section>
 );
 
-function App() {
+// --- Home Page Wrapper com Tracking ---
+const HomePage = () => {
+  useEffect(() => {
+    trackVisit();
+    
+    // Observar seções visíveis
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            trackSectionView(entry.target.id || 'hero');
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    // Observar todas as sections
+    document.querySelectorAll('section[id]').forEach((section) => {
+      observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="app">
       <Navbar />
@@ -405,7 +434,24 @@ function App() {
       >
         <MessageCircle size={32} />
       </a>
+
+      {/* Widget de Feedback */}
+      <FeedbackWidget />
+
+      {/* Banner de Cookies */}
+      <CookieBanner />
     </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
