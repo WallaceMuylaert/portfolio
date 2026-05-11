@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Bot, 
-  Workflow, 
-  Briefcase, 
-  GraduationCap, 
+import {
+  Bot,
+  Workflow,
+  Briefcase,
+  GraduationCap,
   CheckCircle2,
   Phone,
   Mail,
@@ -46,20 +46,20 @@ const PROFILE_DATA = {
     }
   ],
   skills: [
-    { 
-      icon: <Bot size={28} />, 
-      title: "Inteligência Artificial para Negócios", 
-      desc: "Uso de ferramentas como o ChatGPT para automatizar tarefas repetitivas e gerar documentos em segundos." 
+    {
+      icon: <Bot size={28} />,
+      title: "Inteligência Artificial para Negócios",
+      desc: "Uso de ferramentas como o ChatGPT para automatizar tarefas repetitivas e gerar documentos em segundos."
     },
-    { 
-      icon: <Workflow size={28} />, 
-      title: "Sistemas Sob Medida", 
-      desc: "Criação de plataformas fáceis de usar que resolvem os problemas específicos da sua rotina." 
+    {
+      icon: <Workflow size={28} />,
+      title: "Sistemas Sob Medida",
+      desc: "Criação de plataformas fáceis de usar que resolvem os problemas específicos da sua rotina."
     },
-    { 
-      icon: <Zap size={28} />, 
-      title: "Modernização Digital", 
-      desc: "Transformação de processos manuais (papel e planilhas) em sistemas digitais seguros e acessíveis." 
+    {
+      icon: <Zap size={28} />,
+      title: "Modernização Digital",
+      desc: "Transformação de processos manuais (papel e planilhas) em sistemas digitais seguros e acessíveis."
     }
   ],
   certifications: [
@@ -69,24 +69,31 @@ const PROFILE_DATA = {
   languages: ["Português (Nativo)", "Inglês (Básico)"],
   projects: [
     {
+      icon: <Briefcase size={24} />,
+      title: "Fragosori",
+      desc: "Boutique jurídica especializada em reestruturação empresarial e insolvência. Site institucional premium com design sóbrio que transmite autoridade e sofisticação.",
+      tags: ["Site Institucional", "Jurídico", "Design Premium"],
+      link: "https://fragosori.com.br/"
+    },
+    {
       icon: <Globe size={24} />,
       title: "Redação Yana",
-      desc: "Sistema sob medida desenvolvido para atender as necessidades específicas da professora Yana, focado na organização e gestão eficiente de suas turmas.",
-      tags: ["Plataforma Digital", "Educação"],
+      desc: "Plataforma SaaS de gestão para cursos de redação. Inclui dashboard para controle de turmas e finanças, otimizando a rotina administrativa de educadores.",
+      tags: ["SaaS", "Educação", "Gestão"],
       link: "https://redacaoyana.com.br"
     },
     {
       icon: <ShieldCheck size={24} />,
       title: "Romaneio Rápido",
-      desc: "Sistema robusto de gestão de fretes e romaneios, simplificando a logística de empresas de transporte.",
-      tags: ["Gestão", "Logística"],
+      desc: "Sistema de automação logística focado em agilizar a separação de pedidos e o controle de estoque para pequenos e médios negócios.",
+      tags: ["Logística", "Automação", "Gestão"],
       link: "https://romaneiorapido.com.br/"
     },
     {
       icon: <Zap size={24} />,
       title: "Pig Scoreboard",
-      desc: "Placar digital interativo e moderno, com atualizações em tempo real e foco total em acessibilidade.",
-      tags: ["Aplicação Web", "UX/UI"],
+      desc: "Placar digital interativo para jogos de mesa. Interface lúdica e dinâmica focada em proporcionar uma experiência de jogo fluida e divertida.",
+      tags: ["UX/UI", "Entretenimento", "Real-time"],
       link: "https://pig-scoreboard.netlify.app/"
     }
   ],
@@ -109,7 +116,7 @@ const Navbar = () => {
           <User size={24} color="var(--primary)" />
           Wallace Barbosa
         </a>
-        
+
         {/* Desktop Links */}
         <div className="nav-links">
           <a href="#solucoes">Soluções</a>
@@ -119,8 +126,8 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Toggle Button */}
-        <button 
-          className="mobile-toggle" 
+        <button
+          className="mobile-toggle"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
@@ -131,7 +138,7 @@ const Navbar = () => {
       {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             className="mobile-menu"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -152,7 +159,7 @@ const Navbar = () => {
 const Hero = () => (
   <section className="hero">
     <div className="container hero-grid">
-      <motion.div 
+      <motion.div
         className="hero-content"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -163,7 +170,7 @@ const Hero = () => (
         </span>
         <h1>Sua rotina mais <span className="text-gradient">simples</span> e inteligente</h1>
         <p>
-          Sou {PROFILE_DATA.name}. Ajudo profissionais e empresas a eliminarem a burocracia 
+          Sou {PROFILE_DATA.name}. Ajudo profissionais e empresas a eliminarem a burocracia
           e ganharem tempo através de automações e tecnologia sob medida.
         </p>
         <div className="btn-group">
@@ -175,17 +182,17 @@ const Hero = () => (
           </a>
         </div>
       </motion.div>
-      
-      <motion.div 
+
+      <motion.div
         className="hero-visual"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
         <div className="avatar-container">
-          <img 
-            src={profileImg} 
-            alt="Wallace Barbosa" 
+          <img
+            src={profileImg}
+            alt="Wallace Barbosa"
           />
         </div>
       </motion.div>
@@ -199,8 +206,8 @@ const Solutions = () => (
       <h2>O que eu posso fazer <span className="text-gradient">pelo seu negócio?</span></h2>
       <div className="grid-cards">
         {PROFILE_DATA.skills.map((skill, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             className="card"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -223,11 +230,11 @@ const Experience = () => (
   <section id="experiencia">
     <div className="container">
       <h2 style={{ marginBottom: '4rem' }}>Minha <span className="text-gradient">Trajetória</span></h2>
-      
+
       <div className="timeline">
         {PROFILE_DATA.experience.map((exp, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             className="timeline-item"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -251,7 +258,7 @@ const Experience = () => (
       <div style={{ marginTop: '5rem' }}>
         <h3 style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.8rem' }}>Formação & Especializações</h3>
         <div className="grid-cards">
-          
+
           <div className="card">
             <div className="icon-wrapper" style={{ width: '48px', height: '48px' }}>
               <GraduationCap size={24} />
@@ -296,8 +303,8 @@ const Portfolio = () => (
       <h2>Casos de <span className="text-gradient">Sucesso</span></h2>
       <div className="grid-cards">
         {PROFILE_DATA.projects.map((project, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             className="card"
             whileHover={{ y: -5 }}
           >
@@ -315,10 +322,10 @@ const Portfolio = () => (
             </div>
             {project.link && (
               <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                <a 
-                  href={project.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                 >
                   <Globe size={16} /> Acessar Projeto
@@ -338,9 +345,9 @@ const FAQ = () => (
       <h2>Dúvidas <span className="text-gradient">Frequentes</span></h2>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {PROFILE_DATA.faq.map((item, index) => (
-          <motion.div 
-            key={index} 
-            className="card" 
+          <motion.div
+            key={index}
+            className="card"
             style={{ marginBottom: '1.5rem', padding: '1.5rem 2rem', textAlign: 'left', alignItems: 'flex-start' }}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -367,7 +374,7 @@ const Contact = () => (
       <p style={{ marginBottom: '3rem', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 3rem' }}>
         Deixe a burocracia com a tecnologia e foque em resultados. Entre em contato para descobrirmos a melhor solução para você.
       </p>
-      
+
       <div className="btn-group" style={{ justifyContent: 'center' }}>
         <a href={`https://wa.me/55${PROFILE_DATA.phone}?text=Ol%C3%A1%2C%20Wallace!%20Acessei%20o%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20saber%20mais%20sobre...`} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
           <Phone size={20} /> Chamar no WhatsApp
@@ -376,7 +383,7 @@ const Contact = () => (
           <Mail size={20} /> Enviar E-mail
         </a>
       </div>
-      
+
       <div style={{ marginTop: '4rem', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2rem' }}>
         <p style={{ fontStyle: 'italic', marginBottom: '0.5rem', fontSize: '1rem' }}>
           Feito com muito ☕ e ❤️ por {PROFILE_DATA.name}
@@ -393,7 +400,7 @@ const Contact = () => (
 const HomePage = () => {
   useEffect(() => {
     trackVisit();
-    
+
     // Observar seções visíveis
     const observer = new IntersectionObserver(
       (entries) => {
@@ -423,9 +430,9 @@ const HomePage = () => {
       <Portfolio />
       <FAQ />
       <Contact />
-      
+
       {/* Floating WhatsApp Button */}
-      <a 
+      <a
         href={`https://wa.me/55${PROFILE_DATA.phone}?text=Ol%C3%A1%2C%20Wallace!%20Acessei%20o%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20saber%20mais%20sobre...`}
         className="whatsapp-float"
         target="_blank"
