@@ -71,7 +71,7 @@ const PROFILE_DATA = {
     {
       icon: <Briefcase size={24} />,
       title: "Fragosori",
-      desc: "Boutique jurídica especializada em reestruturação empresarial e insolvência. Site institucional premium com design sóbrio que transmite autoridade e sofisticação.",
+      desc: "Site institucional para escritório de advocacia especializado em casos complexos de reestruturação empresarial. Design focado em transmitir segurança e autoridade máxima.",
       tags: ["Site Institucional", "Jurídico", "Design Premium"],
       link: "https://fragosori.com.br/"
     },
