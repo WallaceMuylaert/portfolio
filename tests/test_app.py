@@ -31,7 +31,11 @@ def test_success_cases_presence(page):
         page.goto("http://localhost:5173")
         # Verifica se a seção de projetos existe
         assert page.locator("#projetos").is_visible()
-        # Verifica se o novo caso Fragosori está presente
+        # Verifica se o projeto My Teacher App está presente
+        assert page.locator("text=My Teacher App").is_visible()
+        # Verifica se o projeto MedFlow está presente
+        assert page.locator("text=MedFlow").is_visible()
+        # Verifica se o projeto Fragosori está presente
         assert page.locator("text=Fragosori").is_visible()
     except Exception as e:
         pytest.skip(f"Servidor local não detectado: {e}")

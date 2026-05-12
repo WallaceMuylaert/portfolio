@@ -77,10 +77,10 @@ const PROFILE_DATA = {
     },
     {
       icon: <Globe size={24} />,
-      title: "Redação Yana",
-      desc: "Plataforma SaaS de gestão para cursos de redação. Inclui dashboard para controle de turmas e finanças, otimizando a rotina administrativa de educadores.",
-      tags: ["SaaS", "Educação", "Gestão"],
-      link: "https://redacaoyana.com.br"
+      title: "My Teacher App",
+      desc: "Plataforma SaaS completa de gestão escolar que centraliza processos administrativos e pedagógicos. Inclui controle de turmas, frequência, gestão financeira e relatórios detalhados.",
+      tags: ["SaaS", "Gestão Escolar", "Educação"],
+      link: "https://myteacherapp.com.br/"
     },
     {
       icon: <ShieldCheck size={24} />,
@@ -95,6 +95,13 @@ const PROFILE_DATA = {
       desc: "Placar digital interativo para jogos de mesa. Interface lúdica e dinâmica focada em proporcionar uma experiência de jogo fluida e divertida.",
       tags: ["UX/UI", "Entretenimento", "Real-time"],
       link: "https://pig-scoreboard.netlify.app/"
+    },
+    {
+      icon: <Globe size={24} />,
+      title: "MedFlow (Em Breve)",
+      desc: "Plataforma SaaS para gestão de clínicas e profissionais da saúde, com foco em prontuário eletrônico, agendamentos inteligentes e automação de faturamento.",
+      tags: ["Saúde", "Gestão", "SaaS", "Em Breve"],
+      link: "null"
     }
   ],
   faq: [
